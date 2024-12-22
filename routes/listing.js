@@ -7,7 +7,7 @@ const ejsMate = require("ejs-mate");
 const wrapasync = require("../utils/wrapasync.js");
 const expresserror = require("../utils/expresserror.js");
 const { listingSchema, reviewSchema } = require("../schema.js");
-const Review = require("../models/reviews.js");
+const review = require("../models/reviews.js");
 
 const validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
@@ -50,6 +50,7 @@ router.get(
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let getlisting = await listing.findById(id);
+    
     res.render("listings/edit.ejs", { getlisting });
   })
 );
@@ -76,10 +77,12 @@ router.get(
 router.delete(
   "/:id",
   wrapasync(async (req, res) => {
-    const { id } = req.params;
+    let  { id } = req.params;
+    
 
     // Find the listing to delete
-    const newlisting = await listing.findById(id);
+    let  newlisting = await listing.findById(id);
+    
 
     if (!newlisting) {
       req.flash("error", "Listing not found!");
@@ -87,7 +90,9 @@ router.delete(
     }
 
     // Delete associated reviews
-    await Review.deleteMany({ _id: { $in: newlisting.reviews } });
+  if (newlisting.reviews.length > 0) {
+    await review.deleteMany({ id: { $in: newlisting.reviews } });
+  }
 
     // Delete the listing
     await listing.findByIdAndDelete(id);

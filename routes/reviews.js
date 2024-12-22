@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const Review = require('../models/reviews.js'); // Correctly import the Review model
+const review = require('../models/reviews.js'); // Correctly import the Review model
 const listing = require('../models/listing.js');
 const wrapasync = require('../utils/wrapasync.js');
 const expresserror = require('../utils/expresserror.js');
@@ -20,7 +20,7 @@ const validatereview = (req, res, next) => {
 router.delete('/:reviewid', wrapasync(async (req, res) => {
     const { id, reviewid } = req.params;
     await listing.findByIdAndUpdate(id, { $pull: { reviews: reviewid } });
-    await Review.findByIdAndDelete(reviewid); // Ensure Review is defined and correct
+    await review.findByIdAndDelete(reviewid); // Ensure Review is defined and correct
     res.redirect(`/listings/${id}`);
 }));
 
@@ -28,7 +28,7 @@ router.delete('/:reviewid', wrapasync(async (req, res) => {
 router.post('/', validatereview, wrapasync(async (req, res, next) => {
     const { id } = req.params;
     const listings = await listing.findById(id);
-    const newReview = new Review(req.body.review); // Ensure req.body.review exists
+    const newReview = new review(req.body.review); // Ensure req.body.review exists
     listings.reviews.push(newReview);
     await newReview.save();
     await listings.save();
