@@ -1,0 +1,42 @@
+<% layout("layouts/boilerplate") %>
+<body>
+    
+    <form action="/listings/<%= getlisting.id %>?_method=put" method="post"  class="needs-validation" novalidate>
+        <div class="row">
+            <div class="col-8 offset-2">
+            <div class="col-4 mt-3"><h1>Edit Listing</h1></div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+        <input type="text"  name="listing[title]" value="<%= getlisting.title %>" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="Description" class="form-label">Description</label>
+            <textarea class="form-control" name="listing[description]" 
+            ><%= getlisting.description %> </textarea>
+        </div>
+        <div class="mb-3">
+            <label for="image.url" class="form-label">Image/url</label>
+            <input class="form-control" type="text" name="listing[country]" value="<%= getlisting.image.url %>" required>
+        </div>
+        <div class="row">
+            <div class="mb-3 col-4">
+                <label for="price" class="form-label">Price</label>
+                <input class="form-control" type="number" name="listing[price]" value="<%= getlisting.price %>" required>
+            </div>
+            <div class="mb-3 col-8">
+                <label for="country" class="form-label">Country</label>
+                <input class="form-control" type="text" name="listing[country]" value="<%= getlisting.country %>"required>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label for="location" class="form-label">location</label>
+            <input class="form-control" type="text" name="listing[location]" value="<%= getlisting.location %>" required>
+        </div>
+        
+        <button class="btn btn-dark">Edit</button>
+        <br><br>
+    </div>
+        </div>
+    </form>
+</body>
