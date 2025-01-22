@@ -34,7 +34,7 @@ const reviewsrouter= require("./routes/reviews.js")
 const userrouter = require("./routes/user.js")
 
 
-const data= require("../majorproject_airbnb/models/data.js")
+const data= require("./models/data.js")
 
 // connect to mongodb
 main().then(()=>{
