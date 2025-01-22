@@ -10,14 +10,20 @@ const expresserror = require("./utils/expresserror.js")
 const {listingSchema, reviewSchema} = require("./schema.js")
 const Review = require("../majorproject_airbnb/models/reviews.js");
 const session = require("express-session")
+const MongoStore = require('connect-mongo')
 const flash = require("connect-flash")
 const passport = require("passport")
 const localstrategy = require("passport-local")
 const user = require("./models/user.js")
 
+require('dotenv').config();
+
+const db_url =process.env.ATLASDB_URL
+
 app.set("view engine",'ejs')
 app.set("views",path.join(__dirname,"views"))
 app.use(express.urlencoded({extended:true}))
+app.use(express.json())
 app.use(methodOverride('_method'))
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"/public")))
@@ -36,13 +42,23 @@ main().then(()=>{
 }).catch(err => console.log(err));
 
 
+
+
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/airbnb');
+  await mongoose.connect(db_url,{tls:true,});
 }
 
+const store = MongoStore.create({
+  mongoUrl: db_url,
+  crypto:{
+    secret: process.env.SECRET,
+  },
+  touchAfter: 24 * 3600
+});
 
 const sessionoptions={
-  secret: "your secret key",
+  store: store,
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -51,6 +67,7 @@ const sessionoptions={
     httponly : true
   }  // 1 week
 };
+
 
 app.use(session(sessionoptions));
 app.use(flash())

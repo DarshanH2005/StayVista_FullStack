@@ -9,6 +9,12 @@ const expresserror = require("../utils/expresserror.js");
 const { listingSchema, reviewSchema } = require("../schema.js");
 const review = require("../models/reviews.js");
 const {isLoggedIn} = require("../middleware.js");
+const multer = require("multer");
+const {storage,cloudinary} = require("../cloudconfig.js")
+const upload = multer({ storage });
+
+
+
 
 const validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
@@ -36,9 +42,12 @@ router.get("/new",isLoggedIn, (req, res) => {
 // create route
 router.post(
   "/",isLoggedIn,
-  validateListing,
+  upload.single("listing[image]"),validateListing,
   wrapasync(async (req, res, next) => {
+    let url = req.file.path;
+    let filename = req.file.filename
     const newlisting = await new listing(req.body.listing);
+    newlisting.image = {url,filename}
     newlisting.owner = req.user._id
     await newlisting.save();
     req.flash("success", "new listing created successfully");
@@ -56,11 +65,25 @@ router.get(
     res.render("listings/edit.ejs", { getlisting });
   })
 );
+
 router.put(
-  "/:id",
+  "/:id",isLoggedIn,
+  upload.single("listing[image]"),
   wrapasync(async (req, res) => {
     let { id } = req.params;
-    await listing.findByIdAndUpdate(id, { ...req.body.listing });
+
+    let listing2 = await listing.findByIdAndUpdate(
+      id,
+      { ...req.body.listing }// Pass options here
+    );
+
+    if(typeof req.file !== "undefined" && !req.file.path.includes("uploads")){
+    let url = req.file.path;
+    let filename = req.file.filename
+    listing2.image = {url,filename}
+    await listing2.save();
+    }
+    req.flash("success", "Listing updated successfully!");
     res.redirect(`/listings/${id}`);
   })
 );
@@ -83,7 +106,7 @@ router.get(
 //delete route
 router.delete(
   "/:id",isLoggedIn,
-  wrapasync(async (req, res) => {
+  async (req, res) => {
     let  { id } = req.params;
     
 
@@ -95,11 +118,12 @@ router.delete(
       req.flash("error", "Listing not found!");
       return res.redirect("/listings");
     }
-
     // Delete associated reviews
-  if (newlisting.reviews.length > 0) {
-    await review.deleteMany({ id: { $in: newlisting.reviews } });
-  }
+    if (newlisting.reviews.length > 0) {
+      await review.deleteMany({ _id: { $in: newlisting.reviews } });
+    }
+   
+    
 
     // Delete the listing
     await listing.findByIdAndDelete(id);
@@ -110,6 +134,6 @@ router.delete(
     );
     res.redirect("/listings");
   })
-);
+;
 
 module.exports = router;

@@ -9,7 +9,6 @@ module.exports.listingSchema = Joi.object({
         price: Joi.number().required().min(0),
         location: Joi.string().required(),
         country: Joi.string().required(), // Corrected misplaced parenthesis here
-        image: Joi.string(),
             // Make the image object required
     }).required() // Ensure the listing object is required
 });
@@ -20,4 +19,4 @@ module.exports.reviewSchema = Joi.object({
         comment: Joi.string().required(),
         rating: Joi.number().min(1).max(5).required(),
     }).required()
-}).required();
+});

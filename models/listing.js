@@ -17,11 +17,8 @@ const listingSchema= new mongoose.Schema({
     location:String,
     country:[String],
     image: {
-        filename: String,
-        url:{
-            type:String,
-            default: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60.com/150"
-        }
+        url: String,
+        filename: String
     },
     reviews:[{
         type: mongoose.Schema.Types.ObjectId,
@@ -37,7 +34,7 @@ const listingSchema= new mongoose.Schema({
 
 listingSchema.post("findOneAndDelete",async(listing)=>{
     if(listing){
-        await Review.deleteMany({id: {$in : listing.reviews}})
+        await reviews.deleteMany({id: {$in : listing.reviews}})
     }
     
 })
