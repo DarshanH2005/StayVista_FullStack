@@ -100,11 +100,7 @@ app.use("/",userrouter)
 
 
 
-// root route
 
-app.get("/",(req,res)=>{
-  res.send("Root route")
-})
 
 
 // page not found
