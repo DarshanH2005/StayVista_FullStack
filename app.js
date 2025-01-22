@@ -11,7 +11,9 @@ const {listingSchema, reviewSchema} = require("./schema.js")
 const Review = require("../majorproject_airbnb/models/reviews.js");
 const session = require("express-session")
 const flash = require("connect-flash")
-
+const passport = require("passport")
+const localstrategy = require("passport-local")
+const user = require("./models/user.js")
 
 app.set("view engine",'ejs')
 app.set("views",path.join(__dirname,"views"))
@@ -21,8 +23,9 @@ app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"/public")))
 
 
-const listings = require("./routes/listing.js")
-const reviews= require("./routes/reviews.js")
+const listingsrouter = require("./routes/listing.js")
+const reviewsrouter= require("./routes/reviews.js")
+const userrouter = require("./routes/user.js")
 
 
 const data= require("../majorproject_airbnb/models/data.js")
@@ -52,17 +55,30 @@ const sessionoptions={
 app.use(session(sessionoptions));
 app.use(flash())
 
+
+// passport config
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localstrategy(user.authenticate()));
+
+passport.serializeUser(user.serializeUser());
+passport.deserializeUser(user.deserializeUser());
+
+
+
+
 app.use((req,res,next)=>{
   res.locals.success= req.flash("success")
   res.locals.error= req.flash("error")
+  res.locals.currentUser= req.user  // current user is available in all routes
   next()
 })
 
 
 
-
-app.use("/listings",listings)
-app.use("/listings/:id/reviews",reviews)
+app.use("/listings",listingsrouter)
+app.use("/listings/:id/reviews",reviewsrouter)
+app.use("/",userrouter)
 
 
 

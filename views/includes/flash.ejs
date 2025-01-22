@@ -1,7 +1,15 @@
 <% if(success && success.length){ %>
-    <div class="alert alert-success alert-dismissable fade show col-6 offset-3 " role="alert" style="display: flex;">
+    <div class="alert alert-success alert-dismissable fade show col-6 offset-3 mt-3" role="alert" style="display: flex;">
         <%= success  %>
         
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: relative; align-items: end;"></button>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close" ></button>
+</div>
+<% } %>
+
+<% if(error && error.length){ %>
+    <div class="alert alert-danger alert-dismissable fade show col-6 offset-3 mt-3" role="alert" style="display: flex;">
+        <%= error  %>
+        
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close" ></button>
 </div>
 <% } %>

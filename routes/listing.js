@@ -8,6 +8,7 @@ const wrapasync = require("../utils/wrapasync.js");
 const expresserror = require("../utils/expresserror.js");
 const { listingSchema, reviewSchema } = require("../schema.js");
 const review = require("../models/reviews.js");
+const {isLoggedIn} = require("../middleware.js");
 
 const validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
@@ -27,17 +28,18 @@ router.get(
 );
 
 //new route
-router.get("/new", (req, res) => {
+router.get("/new",isLoggedIn, (req, res) => {
+  
   res.render("listings/new.ejs");
 });
 
 // create route
 router.post(
-  "/",
+  "/",isLoggedIn,
   validateListing,
   wrapasync(async (req, res, next) => {
     const newlisting = await new listing(req.body.listing);
-
+    newlisting.owner = req.user._id
     await newlisting.save();
     req.flash("success", "new listing created successfully");
     res.redirect("/listings");
@@ -46,7 +48,7 @@ router.post(
 
 //edit route
 router.get(
-  "/:id/edit",
+  "/:id/edit",isLoggedIn,
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let getlisting = await listing.findById(id);
@@ -68,14 +70,19 @@ router.get(
   "/:id",
   wrapasync(async (req, res) => {
     let { id } = req.params;
-    let getlisting = await listing.findById(id).populate("reviews");
+    let getlisting = await listing.findById(id).populate({path: "reviews",populate :{path: "author"}
+    }).populate("owner");
+    if (!getlisting) {
+      req.flash("error", "Listing not found!");
+      return res.redirect("/listings");
+    }
     res.render("listings/show.ejs", { getlisting });
   })
 );
 
 //delete route
 router.delete(
-  "/:id",
+  "/:id",isLoggedIn,
   wrapasync(async (req, res) => {
     let  { id } = req.params;
     
