@@ -2,13 +2,17 @@
 
 Airbnb Major Project is a full-featured Airbnb clone that allows users to browse listings, register/login, and manage their reservations. Built with Node.js and Express, this project implements user authentication, dynamic routing, and responsive UI rendering using server-side views.
 
+
+
 ## Live Demo
+
+**Please Note:**  
+The backend is hosted on Render. After extended periods of inactivity, the backend goes to sleep, which may result in a delay of up to 20 seconds on the first request.
 
 Experience the project live at:  
 [https://airbnb-mxne.onrender.com/listings](https://airbnb-mxne.onrender.com/listings)
 
-**Please Note:**  
-The backend is hosted on Render. After extended periods of inactivity, the backend goes to sleep, which may result in a delay of up to 20 seconds on the first request.
+
 
 ## Table of Contents
 
